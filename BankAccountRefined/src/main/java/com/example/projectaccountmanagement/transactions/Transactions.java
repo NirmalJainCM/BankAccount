@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.example.projectaccountmanagement.Entity.Accounts;
+
 public class Transactions {
 	Connection dbConnection;
 	String  query;
@@ -30,17 +32,17 @@ public class Transactions {
 		}
 	}
 	
-	public void addBankAccounts(String name, String address, String password, String phone) {
+	public void addBankAccounts(Accounts acc) {
 		//System.out.println(address+ " "+phone+" "+" "+name+" ");
 		//sc.nextLine();
 		query = "insert into bankaccount(name, phone, address, password) values(?,?, ?, ?)";
 		//query = "insert into details(name, addr, previousCompany, salary) values(?, ?, ?, ?)";
 		try {
 			newPreparedStatement = dbConnection.prepareStatement(query);
-			newPreparedStatement.setString(1, name);
-			newPreparedStatement.setString(2, phone);
-			newPreparedStatement.setString(3, address);
-			newPreparedStatement.setString(4,  password);
+			newPreparedStatement.setString(1, acc.name());
+			newPreparedStatement.setString(2, acc.phone());
+			newPreparedStatement.setString(3, acc.address());
+			newPreparedStatement.setString(4,  acc.password());
 			if(newPreparedStatement.executeUpdate()>0) {
 				System.out.println("the details are added successfully");
 			}
@@ -101,16 +103,16 @@ public class Transactions {
 	}
 	
 	
-	public void deposit(Integer amount, Long accountId, Integer balance) {
+	public void deposit(float amount, Long accountId, Integer balance) {
 		query = "update bankaccount set balance = ? where accountId = ?;";
 		//query = "update bankaccount set balance = ? where accountId = ?;";
 		
 		try {
 			
 			newPreparedStatement = dbConnection.prepareStatement(query);
-			amount = amount + balance;
+			
 			//System.out.println(balance);
-			newPreparedStatement.setInt(1, amount);
+			newPreparedStatement.setFloat(1, amount + balance);
 			newPreparedStatement.setLong(2, accountId);
 			if(newPreparedStatement.executeUpdate()>0) {
 				System.out.println("Successfully deposited");
@@ -126,7 +128,7 @@ public class Transactions {
 		try {
 			newPreparedStatement = dbConnection.prepareStatement(query);
 			newPreparedStatement.setLong(1, accountId);
-			newPreparedStatement.setInt(2, amount);
+			newPreparedStatement.setFloat(2, amount);
 			if(newPreparedStatement.executeUpdate()>0) {
 				System.out.println("successfully added transactions");
 			}
@@ -136,17 +138,17 @@ public class Transactions {
 		}
 	}
 	
-	public void withdraw(Integer amount, Long accountId, Integer balance) {
+	public void withdraw(float amount, Long accountId, Integer balance) {
 		query = "update bankaccount set balance = ? where accountId = ?;";
 		//query = "update bankaccount set balance = ? where accountId = ?;";
 		
 		try {
 			
 			newPreparedStatement = dbConnection.prepareStatement(query);
-			amount =  balance-amount;
+
 			//System.out.println(balance);
 			if(amount > minBalance) {
-				newPreparedStatement.setInt(1, amount);
+				newPreparedStatement.setFloat(1, balance-amount);
 				newPreparedStatement.setLong(2, accountId);
 				if(newPreparedStatement.executeUpdate()>0) {
 					System.out.println("Successfully withdrawn");
@@ -161,7 +163,7 @@ public class Transactions {
 			newPreparedStatement = dbConnection.prepareStatement(query);
 			newPreparedStatement.setLong(1, accountId);
 
-			newPreparedStatement.setInt(2, amount);
+			newPreparedStatement.setFloat(2, amount);
 			if(newPreparedStatement.executeUpdate()>0) {
 				System.out.println("successfully added transactions");
 			}
@@ -196,7 +198,7 @@ public class Transactions {
 			
 			
 			
-				newPreparedStatement.setInt(1, balance+amount);
+				newPreparedStatement.setInt(1, amount);
 				newPreparedStatement.setLong(2, touser);
 				if(newPreparedStatement.executeUpdate()>0) {
 					System.out.println("Successfully deposited");
@@ -213,7 +215,7 @@ public class Transactions {
 			newPreparedStatement = dbConnection.prepareStatement(query);
 			newPreparedStatement.setLong(1, touser);
 			newPreparedStatement.setLong(2, accountId);
-			newPreparedStatement.setInt(3, amount);
+			newPreparedStatement.setFloat(3, amount);
 			if(newPreparedStatement.executeUpdate()>0) {
 				System.out.println("successfully added transactions");
 			}
@@ -231,7 +233,7 @@ public class Transactions {
 			newPreparedStatement.setLong(2, userId);
 			ResultSet values = newPreparedStatement.executeQuery();
 			while(values.next())
-				System.out.println("tId:"+ values.getString("tId")	+" rxId: " + values.getString("rxId")+ " txId " + values.getString("txId")+ " timestamp " + values.getString("time"));
+				System.out.println("tId:"+ values.getString("tId")	+" rxId: " + values.getString("rxId")+ " txId " + values.getString("txId")+ " amount  "+values.getString("amount")+ " timestamp " + values.getString("time"));
 		} catch (SQLException e) {
 			
 			System.out.println("Error in printing the transactions"+ e.getMessage());

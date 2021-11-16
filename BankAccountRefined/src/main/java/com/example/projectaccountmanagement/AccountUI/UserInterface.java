@@ -1,18 +1,16 @@
 package com.example.projectaccountmanagement.AccountUI;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
+
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Scanner;
 
+import com.example.projectaccountmanagement.Entity.Accounts;
+import com.example.projectaccountmanagement.Entity.TransactionsTable;
 import com.example.projectaccountmanagement.transactions.Transactions;
 
-import java.util.*;
 
 public class UserInterface 
 {
@@ -40,43 +38,46 @@ public class UserInterface
 	public static void main(String[] args) {
 		Integer balance = 0;
 		Transactions trans1 = new Transactions();
-		System.out.println("Choose an option:\n"
-				+ "1. Create new bank account\n"
-				+ "2. Login\n");
-		Scanner sc = new Scanner(System.in);
-		Integer cases = sc.nextInt();
-		sc.nextLine();
+		Integer flag1= 0;
 		while(true) {
+			System.out.println("Choose an option:\n"
+					+ "1. Create new bank account\n"
+					+ "2. Login\n"
+					+ "default. exit the UI");
+			Scanner sc = new Scanner(System.in);
+			Integer cases = sc.nextInt();
+			sc.nextLine();
 			switch(cases) {
 			case 1:{
 				
 				// create an account	
 				
 				System.out.println("enter the name, phone, address and password of the account");
-				trans1.addBankAccounts(sc.nextLine(), sc.nextLine(), sc.nextLine(), sc.nextLine());
+				Accounts acc = new Accounts(sc.nextLine(), sc.nextLine(), sc.nextLine(), sc.nextLine());
+				trans1.addBankAccounts(acc);
 				
 				break;
 			}
 			case 2:{
 				// login into a user
-				
-				
-				System.out.println("Enter userName/accountId and a password");
+				System.out.println("Enter the username and password to login in as a user");
 				long userName = sc.nextLong();
 				sc.nextLine();
 				String passWord = sc.nextLine();
 				
 				String passwordCheck = trans1.details(userName);				
 				if(passwordCheck.equals(passWord)) {
-					System.out.println("Choose the options\n"
-							+ "1. Check for low balance\n"
-							+ "2. deposit\n"
-							+ "3. withdraw\n"
-							+ "4. funds transfer\n"
-							+ "5. print all trancsactions\n");
-					Integer types = sc.nextInt();
-					sc.nextLine();
 					while(true) {
+						Integer flag= 0;
+						System.out.println("\nChoose the options\n"
+								+ "1. Check for low balance\n"
+								+ "2. deposit\n"
+								+ "3. withdraw\n"
+								+ "4. funds transfer\n"
+								+ "5. print all trancsactions\n"
+								+ "default: exit the loop");
+						Integer types = sc.nextInt();
+						sc.nextLine();
 						switch(types) {					
 						case 1:{ // check low balance
 							System.out.println("Checking for balance");
@@ -117,9 +118,12 @@ public class UserInterface
 							break;
 							
 						default:
-							System.out.println("Enter Proper Options");
+							System.out.println("Logging out");
+							flag=1;
 							break;
 						}
+						if(flag==1)
+							break;
 					}
 				}
 				else {
@@ -129,9 +133,12 @@ public class UserInterface
 					
 			}
 			default:
-			System.out.println("Choose proper options");
+			System.out.println("exit the user interface	");
+			flag1 = 1;
 			break;	
 			}
+			if(flag1==1)
+				break;
 		}
 		
 	}
